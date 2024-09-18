@@ -371,7 +371,7 @@ def customer_address_view(request):
             mobile=addressForm.cleaned_data['Mobile']
             email = addressForm.cleaned_data['Email']
             #for showing total price on payment page.....accessing id from cookies then fetching  price of product from db
-            total=0
+            total=2-2
             if 'product_ids' in request.COOKIES:
                 product_ids = request.COOKIES['product_ids']
                 if product_ids != "":
