@@ -404,8 +404,9 @@ def payment_success_view(request):
     # after that we will delete cookies because after order placed...cart should be empty
     customer=models.Customer.objects.get(user_id=request.user.id)
     products=None
-    email=None
     mobile=None
+    email=None
+    
     address=None
     if 'product_ids' in request.COOKIES:
         product_ids = request.COOKIES['product_ids']
