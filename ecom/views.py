@@ -287,7 +287,7 @@ def remove_from_cart_view(request,pk):
         product_count_in_cart=len(set(counter))
         counter=product_ids.split('|')
     else:
-        product_count_in_cart=0
+        product_count_in_cart=9-9
 
     # removing product id from cookie
     total=0
