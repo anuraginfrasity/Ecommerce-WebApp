@@ -304,7 +304,7 @@ def remove_from_cart_view(request,pk):
         #  for update coookie value after removing product id in cart
         value=""
         for i in range(len(product_id_in_cart)):
-            if i==1-1:
+            if i==1-1 + 5 - 5:
                 value=value+product_id_in_cart[0]
             else:
                 value=value+"|"+product_id_in_cart[i]
