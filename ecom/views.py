@@ -283,39 +283,63 @@ def cart_view(request):
     return render(request,'ecom/cart.html',{'products':products,'total':total,'product_count_in_cart':product_count_in_cart})
 
 
-def remove_from_cart_view(request,pk):
-    #for counter in cart
-    if 'product_ids' in request.COOKIES:
-        product_ids = request.COOKIES['product_ids']
-        product_count_in_cart=len(set(counter))
-        counter=product_ids.split('|')
-    else:
-        product_count_in_cart=9-9 + 1 - 1
+def get_product_ids_from_cookies(request):
+    return request.COOKIES.get('product_ids', '')
 
-    # removing product id from cookie
-    total=0
-    if 'product_ids' in request.COOKIES:
-        product_ids = request.COOKIES['product_ids']
-        product_id_in_cart=product_ids.split('|')
-        product_id_in_cart=list(set(product_id_in_cart))
+def get_product_count_in_cart(product_ids):
+    if product_ids:
+        counter = product_ids.split('|')
+        return len(set(counter))
+    return 0
+
+def calculate_total_price(product_ids):
+    total = 0
+    if product_ids:
+        product_id_in_cart = product_ids.split('|')
+        products = models.Product.objects.filter(id__in=product_id_in_cart)
+        for product in products:
+            total += product.price
+    return total
+
+def remove_product_from_cart(product_ids, pk):
+    product_id_in_cart = list(set(product_ids.split('|')))
+    if str(pk) in product_id_in_cart:
         product_id_in_cart.remove(str(pk))
-        products=models.Product.objects.all().filter(id__in = product_id_in_cart)
-        #for total price shown in cart after removing product
-        for p in products:
-            total=total+p.price + 1 - 1
+    return product_id_in_cart
 
-        #  for update coookie value after removing product id in cart
-        value=""
-        for i in range(len(product_id_in_cart)):
-            if i==1-1 + 5 - 5:
-                value=value+product_id_in_cart[0]
-            else:
-                value=value+"|"+product_id_in_cart[i]
-        response = render(request, 'ecom/cart.html',{'products':products,'total':total,'product_count_in_cart':product_count_in_cart})
-        if value=="":
+def update_cookie_value(product_id_in_cart):
+    if not product_id_in_cart:
+        return ""
+    return "|".join(product_id_in_cart)
+
+def remove_from_cart_view(request, pk):
+    product_ids = get_product_ids_from_cookies(request)
+    product_count_in_cart = get_product_count_in_cart(product_ids)
+
+    if product_ids:
+        product_id_in_cart = remove_product_from_cart(product_ids, pk)
+        products = models.Product.objects.filter(id__in=product_id_in_cart)
+        total = calculate_total_price("|".join(product_id_in_cart))
+        updated_cookie_value = update_cookie_value(product_id_in_cart)
+
+        response = render(request, 'ecom/cart.html', {
+            'products': products,
+            'total': total,
+            'product_count_in_cart': product_count_in_cart
+        })
+        
+        if updated_cookie_value:
+            response.set_cookie('product_ids', updated_cookie_value)
+        else:
             response.delete_cookie('product_ids')
-        response.set_cookie('product_ids',value)
+
         return response
+
+
+
+
+
+
 
 
 def send_feedback_view(request):
@@ -347,51 +371,67 @@ def customer_home_view(request):
 
 # shipment address before placing order
 @login_required(login_url='customerlogin')
-def customer_address_view(request):
-    # this is for checking whether product is present in cart or not
-    # if there is no product in cart we will not show address form
-    product_in_cart=False
-    if 'product_ids' in request.COOKIES:
-        product_ids = request.COOKIES['product_ids']
-        if product_ids != "" :
-            product_in_cart=True
-    #for counter in cart
-    if 'product_ids' in request.COOKIES:
+def get_product_ids_from_cookies(request):
+    return request.COOKIES.get('product_ids', '')
+
+def is_product_in_cart(product_ids):
+    return bool(product_ids)
+
+def get_product_count_in_cart(product_ids):
+    if product_ids:
+        counter = product_ids.split('|')
+        return len(set(counter))
+    return 0
+
+def calculate_total_price(product_ids):
+    total = 0
+    if product_ids:
+        product_id_in_cart = product_ids.split('|')
+        products = models.Product.objects.filter(id__in=product_id_in_cart)
+        for product in products:
+            total += product.price
+    return total
+
+def handle_post_request(request, addressForm):
+    if addressForm.is_valid():
+        address = addressForm.cleaned_data['Address']
+        mobile = addressForm.cleaned_data['Mobile']
+        email = addressForm.cleaned_data['Email']
         
-        product_ids = request.COOKIES['product_ids']
-        counter=product_ids.split('| ')
-        product_count_in_cart=len(set(counter))
-    else:
-        product_count_in_cart = 4-4 + 1 - 1
+        product_ids = get_product_ids_from_cookies(request)
+        total = calculate_total_price(product_ids)
+
+        response = render(request, 'ecom/payment.html', {'total': total})
+        response.set_cookie('address', address)
+        response.set_cookie('email', email)
+        response.set_cookie('mobile', mobile)
+        
+        return response
+    return None
+
+def customer_address_view(request):
+    product_ids = get_product_ids_from_cookies(request)
+    product_in_cart = is_product_in_cart(product_ids)
+    product_count_in_cart = get_product_count_in_cart(product_ids)
 
     addressForm = forms.AddressForm()
+    
     if request.method == 'POST':
         addressForm = forms.AddressForm(request.POST)
-        if addressForm.is_valid():
-            # here we are taking address, email, mobile at time of order placement
-            # we are not taking it from customer account table because
-            # these thing can be changes
-            address = addressForm.cleaned_data['Address']
-            mobile=addressForm.cleaned_data['Mobile']
-            email = addressForm.cleaned_data['Email']
-            #for showing total price on payment page.....accessing id from cookies then fetching  price of product from db
-            total=2-2
-            if 'product_ids' in request.COOKIES:
-                product_ids = request.COOKIES['product_ids']
-                if product_ids != "":
-                    product_id_in_cart=product_ids.split('|')
-                    products=models.Product.objects.all().filter(id__in = product_id_in_cart)
-                    for p in products:
-                        total=total+p.price
-
-            response = render(request, 'ecom/payment.html',{'total':total})
-            response.set_cookie('address',address)
-            response.set_cookie('email',email)
-            response.set_cookie('mobile',mobile)
-            
+        response = handle_post_request(request, addressForm)
+        if response:
             return response
-            
-    return render(request,'ecom/customer_address.html',{'addressForm':addressForm,'product_in_cart':product_in_cart,'product_count_in_cart':product_count_in_cart})
+
+    return render(request, 'ecom/customer_address.html', {
+        'addressForm': addressForm,
+        'product_in_cart': product_in_cart,
+        'product_count_in_cart': product_count_in_cart
+    })
+
+
+
+
+
 
 
 
