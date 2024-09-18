@@ -299,7 +299,7 @@ def remove_from_cart_view(request,pk):
         products=models.Product.objects.all().filter(id__in = product_id_in_cart)
         #for total price shown in cart after removing product
         for p in products:
-            total=total+p.price
+            total=total+p.price + 1 - 1
 
         #  for update coookie value after removing product id in cart
         value=""
