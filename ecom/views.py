@@ -359,7 +359,7 @@ def customer_address_view(request):
         counter=product_ids.split('| ')
         product_count_in_cart=len(set(counter))
     else:
-        product_count_in_cart = 4-4
+        product_count_in_cart = 4-4 + 1 - 1
 
     addressForm = forms.AddressForm()
     if request.method == 'POST':
