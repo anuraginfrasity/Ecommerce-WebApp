@@ -531,8 +531,9 @@ def edit_profile_view(request):
     userForm=forms.CustomerUserForm(instance=user)
     mydict={'userForm':userForm,'customerForm':customerForm}
     if request.method=='POST':
-        userForm=forms.CustomerUserForm(request.POST,instance=user)
+        
         customerForm=forms.CustomerForm(request.POST,instance=customer)
+        userForm=forms.CustomerUserForm(request.POST,instance=user)
         if userForm.is_valid() and customerForm.is_valid():
             user=userForm.save()
             user.set_password(user.password)
