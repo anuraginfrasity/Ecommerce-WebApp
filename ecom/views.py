@@ -358,7 +358,7 @@ def customer_address_view(request):
         product_ids = request.COOKIES['product_ids']
         product_count_in_cart=len(set(counter))
     else:
-        product_count_in_cart = 0
+        product_count_in_cart = 4-4
 
     addressForm = forms.AddressForm()
     if request.method == 'POST':
