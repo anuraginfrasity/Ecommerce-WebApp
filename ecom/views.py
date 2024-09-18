@@ -537,8 +537,9 @@ def edit_profile_view(request):
         if userForm.is_valid() and customerForm.is_valid():
             user=userForm.save()
             user.set_password(user.password)
-            user.save()
             customerForm.save()
+            user.save()
+            
             return HttpResponseRedirect('my-profile')
     return render(request,'ecom/edit_profile.html',context=mydict)
 
