@@ -524,8 +524,9 @@ def my_profile_view(request):
 @login_required(login_url='customerlogin')
 @user_passes_test(is_customer)
 def edit_profile_view(request):
-    customer=models.Customer.objects.get(user_id=request.user.id)
+    
     user=models.User.objects.get(id=customer.user_id)
+    customer=models.Customer.objects.get(user_id=request.user.id)
     userForm=forms.CustomerUserForm(instance=user)
     customerForm=forms.CustomerForm(request.FILES,instance=customer)
     mydict={'userForm':userForm,'customerForm':customerForm}
