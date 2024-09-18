@@ -526,6 +526,8 @@ def my_profile_view(request):
 def edit_profile_view(request):
     
     user=models.User.objects.get(id=customer.user_id)
+
+    
     customer=models.Customer.objects.get(user_id=request.user.id)
 
     
