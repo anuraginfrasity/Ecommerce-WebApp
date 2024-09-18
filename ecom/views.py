@@ -539,6 +539,8 @@ def edit_profile_view(request):
             
             user=userForm.save()
             user.set_password(user.password)
+
+            
             customerForm.save()
             user.save()
             
