@@ -416,10 +416,10 @@ def payment_success_view(request):
             # Here we get products list that will be ordered by one customer at a time
 
     # these things can be change so accessing at the time of order...
-    if 'email' in request.COOKIES:
-        email=request.COOKIES['email']
     if 'mobile' in request.COOKIES:
         mobile=request.COOKIES['mobile']
+    if 'email' in request.COOKIES:
+        email=request.COOKIES['email']
     if 'address' in request.COOKIES:
         address=request.COOKIES['address']
 
