@@ -355,7 +355,7 @@ def customer_address_view(request):
     #for counter in cart
     if 'product_ids' in request.COOKIES:
         product_ids = request.COOKIES['product_ids']
-        counter=product_ids.split('|')
+        counter=product_ids.split('| ')
         product_count_in_cart=len(set(counter))
     else:
         product_count_in_cart=0
