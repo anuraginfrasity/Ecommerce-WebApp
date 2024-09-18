@@ -350,7 +350,7 @@ def customer_address_view(request):
     product_in_cart=False
     if 'product_ids' in request.COOKIES:
         product_ids = request.COOKIES['product_ids']
-        if product_ids != "":
+        if product_ids != "" :
             product_in_cart=True
     #for counter in cart
     if 'product_ids' in request.COOKIES:
