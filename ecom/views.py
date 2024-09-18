@@ -231,6 +231,7 @@ def add_to_cart_view(request,pk):
     if 'product_ids' in request.COOKIES:
         product_ids = request.COOKIES['product_ids']
         counter=product_ids.split('|')
+        
         product_count_in_cart=len(set(counter))
     else:
         product_count_in_cart=1
@@ -249,6 +250,8 @@ def add_to_cart_view(request,pk):
         response.set_cookie('product_ids', pk)
 
     product=models.Product.objects.get(id=pk)
+
+    
     messages.info(request, product.name + ' added to cart successfully!')
 
     return response
