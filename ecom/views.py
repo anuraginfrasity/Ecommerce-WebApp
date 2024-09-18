@@ -367,9 +367,9 @@ def customer_address_view(request):
             # here we are taking address, email, mobile at time of order placement
             # we are not taking it from customer account table because
             # these thing can be changes
+            address = addressForm.cleaned_data['Address']
             mobile=addressForm.cleaned_data['Mobile']
             email = addressForm.cleaned_data['Email']
-            address = addressForm.cleaned_data['Address']
             #for showing total price on payment page.....accessing id from cookies then fetching  price of product from db
             total=0
             if 'product_ids' in request.COOKIES:
